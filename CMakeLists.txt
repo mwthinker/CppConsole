@@ -14,12 +14,12 @@ endif ()
 
 # Source files.
 set(SOURCES
-	src/console.cpp
-	src/console.h
+	src/console/console.cpp
+	src/console/console.h
 )
 
 set(SOURCES_TEST
-	srcTest/main.cpp
+	srcTest/console/main.cpp
 )
 
 option(ConsoleTest "ConsoleTest project is added" OFF)

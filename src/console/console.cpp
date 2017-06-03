@@ -90,6 +90,18 @@ namespace console {
 				case 0x58: return Key::KEY_X;
 				case 0x59: return Key::KEY_Y;
 				case 0x5A: return Key::KEY_Z;
+				case VK_F1: return Key::F1;
+				case VK_F2: return Key::F2;
+				case VK_F3: return Key::F3;
+				case VK_F4: return Key::F4;
+				case VK_F5: return Key::F5;
+				case VK_F6: return Key::F6;
+				case VK_F7: return Key::F7;
+				case VK_F8: return Key::F8;
+				case VK_F9: return Key::F9;
+				case VK_F10: return Key::F10;
+				case VK_F11: return Key::F11;
+				case VK_F12: return Key::F12;
 			}
 			return Key::UNKNOWN;
 		}

@@ -88,7 +88,19 @@ namespace console {
 		KEY_W,
 		KEY_X,
 		KEY_Y,
-		KEY_Z
+		KEY_Z,
+		F1,
+		F2,
+		F3,
+		F4,
+		F5,
+		F6,
+		F7,
+		F8,
+		F9,
+		F10,
+		F11,
+		F12
 	};
 
 	struct KeyEvent {

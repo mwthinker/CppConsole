@@ -100,7 +100,8 @@ namespace console {
 		F9,
 		F10,
 		F11,
-		F12
+		F12,
+		SIZE_ENUM
 	};
 
 	struct KeyEvent {
@@ -176,7 +177,7 @@ namespace console {
 		bool quit_;
 		Color textColor_;
 		Color backgroundColor_;
-		std::array<bool, 53> keyIsPressed_;
+		std::array<bool, static_cast<size_t>(Key::SIZE_ENUM)> keyIsPressed_;
 #ifdef _WIN32
 		CONSOLE_SCREEN_BUFFER_INFO initScreenBufferInfo_;
 		CONSOLE_CURSOR_INFO initCursorInfo_;

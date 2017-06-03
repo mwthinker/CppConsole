@@ -19,7 +19,7 @@ set(SOURCES
 )
 
 set(SOURCES_TEST
-	srcTest/console/main.cpp
+	srcTest/main.cpp
 )
 
 option(ConsoleTest "ConsoleTest project is added" OFF)

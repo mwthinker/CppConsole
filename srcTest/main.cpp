@@ -2,7 +2,7 @@
 #include <thread>
 #include <sstream>
 
-#include <console.h>
+#include <console/console.h>
 
 class TestConsole : public console::Console {
 public:

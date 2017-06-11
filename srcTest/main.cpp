@@ -103,17 +103,16 @@ private:
 					case console::Key::ESCAPE:
 						quit();
 						break;
-					case console::Key::SPACE:
-						print("KEYDOWN");
-						break;
 				}
+				print("KEYDOWN");
 				break;
 			case console::ConsoleEventType::KEYUP:
 				switch (consoleEvent.keyEvent.key) {
-					case console::Key::SPACE:
-						print("KEYUP");
+					case console::Key::RETURN:
+						print("RETURN");
 						break;
 				}
+				print("KEYUP");
 				break;
 			case console::ConsoleEventType::CONSOLERESIZE:
 				clear();

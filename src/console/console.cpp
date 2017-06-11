@@ -255,7 +255,7 @@ namespace console {
 
 		inline Key convertKey(int keyCode) {
 			switch (keyCode) {
-				case KEY_ENTER:	return Key::RETURN;
+				case 10: return Key::RETURN;
 				case KEY_BACKSPACE: return Key::BACKSPACE;
 				case 9: return Key::TAB;
 				case 27: return Key::ESCAPE;

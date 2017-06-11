@@ -13,69 +13,62 @@ protected:
 	void printColor(console::Color color) {
 		switch (color) {
 			case console::Color::BLACK:
-				std::cout << "BLACK\n";
+				print("BLACK");
 				break;
 			case console::Color::DARKBLUE:
-				std::cout << "DARKBLUE\n";
+				print("DARKBLUE");
 				break;
 			case console::Color::DARKGREEN:
-				std::cout << "DARKGREEN\n";
+				print("DARKGREEN");
 				break;
 			case console::Color::DARKCYAN:
-				std::cout << "DARKCYAN\n";
+				print("DARKCYAN");
 				break;
 			case console::Color::DARKRED:
-				std::cout << "DARKRED\n";
+				print("DARKRED");
 				break;
 			case console::Color::DARKMAGENTA:
-				std::cout << "DARKMAGENTA\n";
+				print("DARKMAGENTA");
 				break;
 			case console::Color::DARKYELLOW:
-				std::cout << "DARKYELLOW\n";
+				print("DARKYELLOW");
 				break;
 			case console::Color::DARKGREY:
-				std::cout << "DARKGREY\n";
+				print("DARKGREY");
 				break;
 			case console::Color::GREY:
-				std::cout << "GREY\n";
+				print("GREY");
 				break;
 			case console::Color::BLUE:
-				std::cout << "BLUE\n";
+				print("BLUE");
 				break;
 			case console::Color::GREEN:
-				std::cout << "GREEN\n";
+				print("GREEN");
 				break;
 			case console::Color::CYAN:
-				std::cout << "CYAN\n";
+				print("CYAN");
 				break;
 			case console::Color::RED:
-				std::cout << "RED\n";
+				print("RED");
 				break;
 			case console::Color::MAGENTA:
-				std::cout << "MAGENTA\n";
+				print("MAGENTA");
 				break;
 			case console::Color::YELLOW:
-				std::cout << "YELLOW\n";
+				print("YELLOW");
 				break;
 			case console::Color::WHITE:
-				std::cout << "WHITE\n";
+				print("WHITE");
 				break;
 		}
 	}
 
 	void initPreLoop() override {
-		clear();
 		setTitle("Test");
-		setCursorVisibility(true);
 		setCursorPosition(10, 10);
-		print("hello"); // Will not be shown, covered by
-		print("HHHHHHHHHHHHHH");
-		print("bb");
-
-		/*
-		console::Console::setTextColor(console::Color::RED);
-		console::Console::setCursorPosition(20, 10);
-		console::Console::setTextColor(console::Color::GREEN);
+		print("testing1");
+		print("testing1") << "testing2: " << 2 << "\n";
+		print("             testing3") << 3.1;
 
 		console::Console::setBackgroundColor(console::Color::BLACK);
 		for (int i = 0; i < 16; ++i) {
@@ -90,7 +83,8 @@ protected:
 			console::Console::setCursorPosition(1, 16 + i);
 			printColor((console::Color) i);
 		}
-		*/		
+		int x, y;
+		getCursorPosition(x,y);
 	}
 
 	void closePostLoop() override {
@@ -120,6 +114,10 @@ private:
 						print("KEYUP");
 						break;
 				}
+				break;
+			case console::ConsoleEventType::CONSOLERESIZE:
+				clear();
+				initPreLoop();
 				break;
 		}
 	}

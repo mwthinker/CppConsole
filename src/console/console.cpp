@@ -16,6 +16,30 @@ namespace console {
 		close();
 	}
 
+	const Console& Console::print(int nbr) const {
+		return operator<<(nbr);
+	}
+
+	const Console& Console::print(double nbr) const {
+		return operator<<(nbr);
+	}
+
+	const Console& Console::operator<<(std::string str) const {
+		return print(str);;
+	}
+
+	const Console& Console::operator<<(int nbr) const {
+		std::stringstream stream;
+		stream << nbr;
+		return print(stream.str());;
+	}
+
+	const Console& Console::operator<<(double nbr) const {
+		std::stringstream stream;
+		stream << nbr;
+		return print(stream.str());;
+	}
+
 } // Namespace console.
 
 #ifdef _WIN32
@@ -31,15 +55,10 @@ namespace console {
 	namespace {
 
 		inline Key convertKey(WORD keyCode, DWORD controlKeyState) {
-			if (controlKeyState == RIGHT_CTRL_PRESSED) {
-				std::cout << "RIGHT_CTRL_PRESSED" << std::endl;
-			}
-
 			switch (keyCode) {
 				case VK_RETURN:	return Key::RETURN;
 				case VK_TAB: return Key::TAB;
 				case VK_BACK: return Key::RETURN;
-				case VK_CONTROL: return Key::CTRL;
 				case VK_ESCAPE:	return Key::ESCAPE;
 				case VK_SPACE: return Key::SPACE;
 				case VK_PRIOR: return Key::PAGEUP;
@@ -50,8 +69,8 @@ namespace console {
 				case VK_UP: return Key::UP;
 				case VK_RIGHT: return Key::RIGHT;
 				case VK_DOWN: return Key::DOWN;
-				case VK_INSERT: return Key::INSERT;
-				case VK_DELETE: return Key::DELETE;
+				case VK_INSERT: return Key::KEY_INSERT;
+				case VK_DELETE: return Key::KEY_DELETE;
 				case 0x30: return Key::KEY_0;
 				case 0x31: return Key::KEY_1;
 				case 0x32: return Key::KEY_2;
@@ -94,25 +113,6 @@ namespace console {
 
 	} // Namespace anonymous.
 
-	const Console& Console::operator<<(std::string str) const {
-		std::cout << str;
-		return *this;
-	}
-
-	const Console& Console::operator<<(int nbr) const {
-		std::stringstream stream;
-		stream << nbr;
-		std::cout << stream.str();
-		return *this;
-	}
-
-	const Console& Console::operator<<(double nbr) const {
-		std::stringstream stream;
-		stream << nbr;
-		std::cout << stream.str();
-		return *this;
-	}
-
 	void Console::startLoop() {
 		initPreLoop();
 		
@@ -150,6 +150,10 @@ namespace console {
 							}
 							break;
 					}
+				} else if (inputRecord.EventType == WINDOW_BUFFER_SIZE_EVENT) {
+					ConsoleEvent consoleEvent;
+					consoleEvent.consoleResize.type = ConsoleEventType::CONSOLERESIZE;
+					eventUpdate(consoleEvent);
 				}
 			}
 
@@ -192,13 +196,16 @@ namespace console {
 		// Save current console settings.
 		GetConsoleScreenBufferInfo(outputHandle_, &initScreenBufferInfo_);
 		GetConsoleCursorInfo(outputHandle_, &initCursorInfo_);
+		setCursorVisibility(false);
+		clear();
 	}
 
-	void Console::print(std::string str) const {
+	const Console& Console::print(std::string str) const {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(outputHandle_, &csbi);
 		DWORD nbr;
-		WriteConsoleOutputCharacter(outputHandle_, str.c_str(), str.size(), csbi.dwCursorPosition, &nbr);
+		WriteConsole(outputHandle_, str.c_str(), str.size(), &nbr, NULL);
+		return *this;
 	}
 
 	bool Console::isCursorVisibility() const {
@@ -218,10 +225,10 @@ namespace console {
 	}
 
 	void Console::getCursorPosition(int& x, int& y) const {
-		tagPOINT point;
-		GetCursorPos(&point);
-		x = point.x;
-		y = point.y;
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(outputHandle_, &csbi);
+		x = csbi.dwCursorPosition.X;
+		y = csbi.dwCursorPosition.Y;
 	}
 
 	void Console::setTextColor(Color color) {
@@ -242,8 +249,6 @@ namespace console {
 #include <algorithm>
 #include <curses.h>
 
-using namespace std::literals::chrono_literals;
-
 namespace console {
 
 	namespace {
@@ -263,8 +268,8 @@ namespace console {
 				case KEY_UP: return Key::UP;
 				case KEY_RIGHT: return Key::RIGHT;
 				case KEY_DOWN: return Key::DOWN;
-				case KEY_IC: return Key::INSERT;
-				case KEY_DC: return Key::DELETE;
+				case KEY_IC: return Key::KEY_INSERT;
+				case KEY_DC: return Key::KEY_DELETE;
 				case '0': return Key::KEY_0;
 				case '1': return Key::KEY_1;
 				case '2': return Key::KEY_2;
@@ -332,44 +337,53 @@ namespace console {
 		inline int colorToInt(Color color) {
 			switch (color) {
 				case Color::BLACK:
-					return 0;
-				case Color::GREY:
-					return 0;
-				case Color::BLUE:
-					return 0;
-				case Color::DARKBLUE:
-					return 0;
-				case Color::GREEN:
-					return 0;
-				case Color::DARKGREEN:
-					return 0;
-				case Color::CYAN:
-					return 0;
-				case Color::DARKCYAN:
-					return 0;
-				case Color::RED:
-					return 0;
-				case Color::DARKRED:
-					return 0;
-				case Color::MAGENTA:
-					return 0;
-				case Color::DARKMAGENTA:
-					return 0;
-				case Color::DARKYELLOW:
-					return 0;
-				case Color::YELLOW:
-					return 0;
+					return COLOR_BLACK;
 				case Color::DARKGREY:
-					return 0;
+					return COLOR_BLACK + 8;
+				case Color::GREY:
+					return COLOR_WHITE;
 				case Color::WHITE:
-					return 0;
+					return COLOR_WHITE + 8;
+				case Color::BLUE:
+					return COLOR_BLUE + 8;
+				case Color::DARKBLUE:
+					return COLOR_BLUE;
+				case Color::GREEN:
+					return COLOR_GREEN + 8;
+				case Color::DARKGREEN:
+					return COLOR_GREEN;
+				case Color::CYAN:
+					return COLOR_CYAN + 8;
+				case Color::DARKCYAN:
+					return COLOR_CYAN;
+				case Color::RED:
+					return COLOR_RED + 8;
+				case Color::DARKRED:
+					return COLOR_RED;
+				case Color::MAGENTA:
+					return COLOR_MAGENTA + 8;
+				case Color::DARKMAGENTA:
+					return COLOR_MAGENTA;
+				case Color::YELLOW:
+					return COLOR_YELLOW + 8;
+				case Color::DARKYELLOW:
+					return COLOR_YELLOW;
 			}
-			return 0;
+			return COLOR_WHITE;
 		}
 
-		void setColorPair(Color textCoror, Color backgroundColor) {
-			attron(COLOR_PAIR(2));
-		}	
+		void setColorPair(Color textColor, Color backgroundColor) {
+			int index = colorToInt(textColor) + colorToInt(backgroundColor) * 16 + 1;
+			attron(COLOR_PAIR(index));
+		}
+
+		void initColorPairs() {
+			for (int i = 0; i < 16; i++) {
+				for (int j = 0; j < 16; j++) { 
+					init_pair (i + j * 16 + 1, i, j);
+				}
+			}
+		}
 		
 	} // Namespace anonymous.
 
@@ -385,6 +399,13 @@ namespace console {
 			int ch = ERR;
 			
 			while ((ch = getch()) != ERR ) {
+				if (KEY_RESIZE == ch) {
+					ConsoleEvent consoleEvent;
+					consoleEvent.consoleResize.type = ConsoleEventType::CONSOLERESIZE;
+					eventUpdate(consoleEvent);
+					continue;
+				}
+
 				Key key = convertKey(ch);
 
 				auto it = std::find_if(keyIsPressed_.begin(), keyIsPressed_.end(), [key](const KeyInfo& keyInfo) {
@@ -407,7 +428,7 @@ namespace console {
 			
 			auto it = keyIsPressed_.begin();
 			while (it != keyIsPressed_.end()) {
-				if (time - it->time_ > 250ms) {
+				if (time - it->time_ > std::chrono::milliseconds(250)) {
 					ConsoleEvent consoleEvent;
 					consoleEvent.keyEvent.key = it->key_;
 					consoleEvent.keyEvent.type = ConsoleEventType::KEYUP;
@@ -425,30 +446,13 @@ namespace console {
 		}
 	}
 
-	void Console::print(std::string str) const {
-		mvprintw(10, 0, str.c_str());
-	}
-
-	const Console& Console::operator<<(std::string str) const {
-		std::cout << str;
-		return *this;
-	}
-
-	const Console& Console::operator<<(int nbr) const {
-		std::stringstream stream;
-		stream << nbr;
-		std::cout << stream.str();
-		return *this;
-	}
-
-	const Console& Console::operator<<(double nbr) const {
-		std::stringstream stream;
-		stream << nbr;
-		std::cout << stream.str();
+	const Console& Console::print(std::string str) const {
+		printw(str.c_str());
 		return *this;
 	}
 
 	void Console::setCursorVisibility(bool visible) {
+		curs_set(visible ? 1 : 0);
 	}
 
 	bool Console::isCursorVisibility() const{
@@ -464,16 +468,17 @@ namespace console {
 	}
 
 	void Console::getCursorPosition(int& x, int& y) const {
+		getyx(stdscr, y, x);
 	}
 
 	void Console::setTextColor(Color color) {
 		textColor_ = color;
-		//std::cout << colorToBackgroundAnsi(backgroundColor_) << colorToTextAnsi(textColor_);
+		setColorPair(textColor_, backgroundColor_);
 	}
 
 	void Console::setBackgroundColor(Color color) {
 		backgroundColor_ = color;
-		//std::cout << colorToBackgroundAnsi(backgroundColor_);
+		setColorPair(textColor_, backgroundColor_);
 	}
 
 	void Console::setTitle(std::string title) {
@@ -487,20 +492,9 @@ namespace console {
 		noecho();
 		keypad(stdscr, TRUE);
 		start_color();
-		init_color(COLOR_BLACK + 8, 0, 0, 0);
-		init_color(COLOR_RED + 8, 500, 0, 0);
-		init_color(COLOR_GREEN + 8, 0, 500, 0);
-		init_color(COLOR_YELLOW + 8, 0, 500, 500);
-		init_color(COLOR_BLUE + 8, 0, 0, 500);
-		init_color(COLOR_MAGENTA + 8, 500, 700, 0);
-		init_color(COLOR_CYAN + 8, 700, 0, 0);
-		init_color(COLOR_WHITE + 8, 500, 500, 500);
-		int count = 0;
-		for (int i = 0; i < 16; i++) {
-        	for (int j = 0; j < 16; j++) { 
-				init_pair (++count, j, i);
-			}
-		}
+		initColorPairs();
+		setCursorVisibility(false);
+		clear();
 	}
 
 	void Console::close() {

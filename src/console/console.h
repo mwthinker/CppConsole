@@ -16,6 +16,7 @@ namespace console {
 	enum class ConsoleEventType {
 		KEYDOWN,
 		KEYUP,
+		CONSOLERESIZE
 	};
 
 	enum class Color {
@@ -52,8 +53,8 @@ namespace console {
 		UP,
 		RIGHT,
 		DOWN,
-		INSERT,
-		DELETE,
+		KEY_INSERT, // Using KEY_ due to be consistent with KEY_DELETE.
+		KEY_DELETE, // Using KEY_ due to name conflict with macro.
 		KEY_0,
 		KEY_1,
 		KEY_2,
@@ -99,9 +100,14 @@ namespace console {
 		char ascii;
 	};
 
+	struct ConsoleResize {
+		ConsoleEventType type;
+	};
+
 	union ConsoleEvent {
 		ConsoleEventType type;
 		KeyEvent keyEvent;
+		ConsoleResize consoleResize;
 	};
 
 	void sleep(double time);
@@ -131,7 +137,11 @@ namespace console {
 
 		void setBackgroundColor(Color color);
 
-		void print(std::string str) const;
+		const Console& print(std::string str) const;
+
+		const Console& print(int nbr) const;
+
+		const Console& print(double nbr) const;
 
 		const Console& operator<<(std::string str) const;
 

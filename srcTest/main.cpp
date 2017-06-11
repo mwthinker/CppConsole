@@ -72,6 +72,7 @@ protected:
 		print("HHHHHHHHHHHHHH");
 		print("bb");
 
+		/*
 		console::Console::setTextColor(console::Color::RED);
 		console::Console::setCursorPosition(20, 10);
 		console::Console::setTextColor(console::Color::GREEN);
@@ -89,7 +90,7 @@ protected:
 			console::Console::setCursorPosition(1, 16 + i);
 			printColor((console::Color) i);
 		}
-		
+		*/		
 	}
 
 	void closePostLoop() override {
@@ -97,6 +98,7 @@ protected:
 
 private:
 	void update(double deltaTime) override {
+		console::sleep(1.0/60.0);
 	}
 
 	// Is called by the loop. Is called when ever a event occurs.
@@ -108,7 +110,14 @@ private:
 						quit();
 						break;
 					case console::Key::SPACE:
-						quit();
+						print("KEYDOWN");
+						break;
+				}
+				break;
+			case console::ConsoleEventType::KEYUP:
+				switch (consoleEvent.keyEvent.key) {
+					case console::Key::SPACE:
+						print("KEYUP");
 						break;
 				}
 				break;

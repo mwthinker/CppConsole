@@ -10,11 +10,7 @@ namespace console {
 
 	void sleep(double time) {
 		std::this_thread::sleep_for(std::chrono::duration<double>(time));
-	}
-
-	Console::Console() : quit_(false), keyIsPressed_({false}), textColor_(Color::WHITE), backgroundColor_(Color::BLACK) {
-		init();
-	}
+	}	
 
 	Console::~Console() {
 		close();
@@ -28,6 +24,10 @@ namespace console {
 
 namespace console {
 
+	Console::Console() : quit_(false), keyIsPressed_({false}), textColor_(Color::WHITE), backgroundColor_(Color::BLACK) {
+		init();
+	}
+
 	namespace {
 
 		inline Key convertKey(WORD keyCode, DWORD controlKeyState) {
@@ -39,9 +39,7 @@ namespace console {
 				case VK_RETURN:	return Key::RETURN;
 				case VK_TAB: return Key::TAB;
 				case VK_BACK: return Key::RETURN;
-				case VK_SHIFT: return Key::SHIFT;
 				case VK_CONTROL: return Key::CTRL;
-				case VK_CAPITAL: return Key::CAPSLOCK;
 				case VK_ESCAPE:	return Key::ESCAPE;
 				case VK_SPACE: return Key::SPACE;
 				case VK_PRIOR: return Key::PAGEUP;
@@ -53,7 +51,7 @@ namespace console {
 				case VK_RIGHT: return Key::RIGHT;
 				case VK_DOWN: return Key::DOWN;
 				case VK_INSERT: return Key::INSERT;
-				case VK_DELETE: return Key::KEY_DELETE;
+				case VK_DELETE: return Key::DELETE;
 				case 0x30: return Key::KEY_0;
 				case 0x31: return Key::KEY_1;
 				case 0x32: return Key::KEY_2;
@@ -90,18 +88,6 @@ namespace console {
 				case 0x58: return Key::KEY_X;
 				case 0x59: return Key::KEY_Y;
 				case 0x5A: return Key::KEY_Z;
-				case VK_F1: return Key::F1;
-				case VK_F2: return Key::F2;
-				case VK_F3: return Key::F3;
-				case VK_F4: return Key::F4;
-				case VK_F5: return Key::F5;
-				case VK_F6: return Key::F6;
-				case VK_F7: return Key::F7;
-				case VK_F8: return Key::F8;
-				case VK_F9: return Key::F9;
-				case VK_F10: return Key::F10;
-				case VK_F11: return Key::F11;
-				case VK_F12: return Key::F12;
 			}
 			return Key::UNKNOWN;
 		}
@@ -253,7 +239,10 @@ namespace console {
 #else
 
 #include <sstream>
+#include <algorithm>
 #include <curses.h>
+
+using namespace std::literals::chrono_literals;
 
 namespace console {
 
@@ -262,11 +251,8 @@ namespace console {
 		inline Key convertKey(int keyCode) {
 			switch (keyCode) {
 				case KEY_ENTER:	return Key::RETURN;
+				case KEY_BACKSPACE: return Key::BACKSPACE;
 				case 9: return Key::TAB;
-				//case VK_BACK: return Key::RETURN;
-				case KEY_SLEFT: return Key::SHIFT;
-				//case VK_CONTROL: return Key::CTRL;
-				//case VK_CAPITAL: return Key::CAPSLOCK;
 				case 27: return Key::ESCAPE;
 				case ' ': return Key::SPACE;
 				case KEY_PPAGE: return Key::PAGEUP;
@@ -278,7 +264,7 @@ namespace console {
 				case KEY_RIGHT: return Key::RIGHT;
 				case KEY_DOWN: return Key::DOWN;
 				case KEY_IC: return Key::INSERT;
-				case KEY_DC: return Key::KEY_DELETE;
+				case KEY_DC: return Key::DELETE;
 				case '0': return Key::KEY_0;
 				case '1': return Key::KEY_1;
 				case '2': return Key::KEY_2;
@@ -343,86 +329,93 @@ namespace console {
 			return Key::UNKNOWN;
 		}
 
-		inline const char * colorToBackgroundAnsi(Color color) {
+		inline int colorToInt(Color color) {
 			switch (color) {
 				case Color::BLACK:
-				case Color::DARKGREY:
-					return "\e[40m";
-				case Color::BLUE:
-				case Color::DARKBLUE:
-					return "\e[44m";
-				case Color::GREEN:
-				case Color::DARKGREEN:
-					return "\e[42m";
-				case Color::CYAN:
-				case Color::DARKCYAN:
-					return "\e[46m";
-				case Color::RED:
-				case Color::DARKRED:
-					return "\e[41m";
-				case Color::MAGENTA:
-				case Color::DARKMAGENTA:
-					return "\e[45m";
-				case Color::YELLOW:
-				case Color::DARKYELLOW:
-					return "\e[43m";
+					return 0;
 				case Color::GREY:
+					return 0;
+				case Color::BLUE:
+					return 0;
+				case Color::DARKBLUE:
+					return 0;
+				case Color::GREEN:
+					return 0;
+				case Color::DARKGREEN:
+					return 0;
+				case Color::CYAN:
+					return 0;
+				case Color::DARKCYAN:
+					return 0;
+				case Color::RED:
+					return 0;
+				case Color::DARKRED:
+					return 0;
+				case Color::MAGENTA:
+					return 0;
+				case Color::DARKMAGENTA:
+					return 0;
+				case Color::DARKYELLOW:
+					return 0;
+				case Color::YELLOW:
+					return 0;
+				case Color::DARKGREY:
+					return 0;
 				case Color::WHITE:
-					return "\e[47m";
+					return 0;
 			}
-			return "";
+			return 0;
 		}
 
-		inline const char * colorToTextAnsi(Color color) {
-			switch (color) {
-				case Color::BLACK:
-					return "\e[22;30m";
-				case Color::GREY:
-					return "\e[22;37m";
-				case Color::BLUE:
-					return "\e[22;34m";
-				case Color::DARKBLUE:
-					return "\e[22;34m";
-				case Color::GREEN:
-					return "\e[22;32m";
-				case Color::DARKGREEN:
-					return "\e[01;32m";
-				case Color::CYAN:
-					return "\e[22;36m";
-				case Color::DARKCYAN:
-					return "\e[01;36m";
-				case Color::RED:
-					return "\e[22;31m";
-				case Color::DARKRED:
-					return "\e[01;31m";
-				case Color::MAGENTA:
-					return "\e[22;35m";
-				case Color::DARKMAGENTA:
-					return "\e[01;35m";
-				case Color::DARKYELLOW:
-					return "\e[22;33m";
-				case Color::YELLOW:
-					return "\e[01;33m";
-				case Color::DARKGREY:
-					return "\e[01;30m";
-				case Color::WHITE:
-					return "\e[01;37m";
-			}
-			return "";
-		}
+		void setColorPair(Color textCoror, Color backgroundColor) {
+			attron(COLOR_PAIR(2));
+		}	
 		
 	} // Namespace anonymous.
 
+	Console::Console() : quit_(false), textColor_(Color::WHITE), backgroundColor_(Color::BLACK) {
+		init();
+	}
+
 	void Console::startLoop() {
 		initPreLoop();
-
+		
 		auto time = std::chrono::high_resolution_clock::now();
 		while (!quit_) {
-			while (int ch = getch() != ERR ) {
-				ConsoleEvent consoleEvent;
-				consoleEvent.keyEvent.type = ConsoleEventType::KEYDOWN;
-				consoleEvent.keyEvent.key = convertKey(ch);
-				eventUpdate(consoleEvent);
+			int ch = ERR;
+			
+			while ((ch = getch()) != ERR ) {
+				Key key = convertKey(ch);
+
+				auto it = std::find_if(keyIsPressed_.begin(), keyIsPressed_.end(), [key](const KeyInfo& keyInfo) {
+					return keyInfo.key_ == key;
+				});
+				
+				if (it != keyIsPressed_.end()) {
+					it->time_ = time;
+				} else {
+					ConsoleEvent consoleEvent;
+					consoleEvent.keyEvent.key = key;
+					consoleEvent.keyEvent.type = ConsoleEventType::KEYDOWN;
+					KeyInfo keyInfo;
+					keyInfo.key_ = key;
+					keyInfo.time_ = time;
+					keyIsPressed_.push_back(keyInfo);
+					eventUpdate(consoleEvent);
+				}
+			}
+			
+			auto it = keyIsPressed_.begin();
+			while (it != keyIsPressed_.end()) {
+				if (time - it->time_ > 250ms) {
+					ConsoleEvent consoleEvent;
+					consoleEvent.keyEvent.key = it->key_;
+					consoleEvent.keyEvent.type = ConsoleEventType::KEYUP;
+					eventUpdate(consoleEvent);
+					keyIsPressed_.erase(it++);
+				} else {
+					++it;
+				}
 			}
 
 			auto currentTime = std::chrono::high_resolution_clock::now();
@@ -433,6 +426,7 @@ namespace console {
 	}
 
 	void Console::print(std::string str) const {
+		mvprintw(10, 0, str.c_str());
 	}
 
 	const Console& Console::operator<<(std::string str) const {
@@ -474,12 +468,12 @@ namespace console {
 
 	void Console::setTextColor(Color color) {
 		textColor_ = color;
-		std::cout << colorToBackgroundAnsi(backgroundColor_) << colorToTextAnsi(textColor_);
+		//std::cout << colorToBackgroundAnsi(backgroundColor_) << colorToTextAnsi(textColor_);
 	}
 
 	void Console::setBackgroundColor(Color color) {
 		backgroundColor_ = color;
-		std::cout << colorToBackgroundAnsi(backgroundColor_);
+		//std::cout << colorToBackgroundAnsi(backgroundColor_);
 	}
 
 	void Console::setTitle(std::string title) {
@@ -492,6 +486,21 @@ namespace console {
 		nodelay(stdscr, TRUE);
 		noecho();
 		keypad(stdscr, TRUE);
+		start_color();
+		init_color(COLOR_BLACK + 8, 0, 0, 0);
+		init_color(COLOR_RED + 8, 500, 0, 0);
+		init_color(COLOR_GREEN + 8, 0, 500, 0);
+		init_color(COLOR_YELLOW + 8, 0, 500, 500);
+		init_color(COLOR_BLUE + 8, 0, 0, 500);
+		init_color(COLOR_MAGENTA + 8, 500, 700, 0);
+		init_color(COLOR_CYAN + 8, 700, 0, 0);
+		init_color(COLOR_WHITE + 8, 500, 500, 500);
+		int count = 0;
+		for (int i = 0; i < 16; i++) {
+        	for (int j = 0; j < 16; j++) { 
+				init_pair (++count, j, i);
+			}
+		}
 	}
 
 	void Console::close() {

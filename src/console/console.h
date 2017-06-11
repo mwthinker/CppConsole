@@ -6,6 +6,9 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <list>
+#include <chrono>
 #endif
 
 namespace console {
@@ -37,10 +40,8 @@ namespace console {
 	enum class Key {
 		UNKNOWN,
 		RETURN,
+		BACKSPACE,
 		TAB,
-		SHIFT,
-		CTRL,
-		CAPSLOCK,
 		ESCAPE,
 		SPACE,
 		PAGEUP,
@@ -52,7 +53,7 @@ namespace console {
 		RIGHT,
 		DOWN,
 		INSERT,
-		KEY_DELETE,
+		DELETE,
 		KEY_0,
 		KEY_1,
 		KEY_2,
@@ -89,18 +90,6 @@ namespace console {
 		KEY_X,
 		KEY_Y,
 		KEY_Z,
-		F1,
-		F2,
-		F3,
-		F4,
-		F5,
-		F6,
-		F7,
-		F8,
-		F9,
-		F10,
-		F11,
-		F12,
 		SIZE_ENUM
 	};
 
@@ -177,14 +166,18 @@ namespace console {
 		bool quit_;
 		Color textColor_;
 		Color backgroundColor_;
-		std::array<bool, static_cast<size_t>(Key::SIZE_ENUM)> keyIsPressed_;
 #ifdef _WIN32
+		std::array<bool, static_cast<size_t>(Key::SIZE_ENUM)> keyIsPressed_;
 		CONSOLE_SCREEN_BUFFER_INFO initScreenBufferInfo_;
 		CONSOLE_CURSOR_INFO initCursorInfo_;
 		HANDLE inputHandle_;
 		HANDLE outputHandle_;
 #else
-		
+		struct KeyInfo {
+			std::chrono::time_point<std::chrono::high_resolution_clock> time_;
+			Key key_;
+		};
+		std::list<KeyInfo> keyIsPressed_;
 #endif // _WIN32
 	};
 

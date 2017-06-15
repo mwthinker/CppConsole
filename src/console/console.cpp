@@ -198,6 +198,9 @@ namespace console {
 		GetConsoleCursorInfo(outputHandle_, &initCursorInfo_);
 		setCursorVisibility(false);
 		clear();
+
+		setTextColor(textColor_);
+		setBackgroundColor(backgroundColor_);
 	}
 
 	const Console& Console::print(std::string str) const {
@@ -372,15 +375,39 @@ namespace console {
 			return COLOR_WHITE;
 		}
 
+		inline int colorPairToIndex(int textColor, int backgroundColor) {
+			int index = textColor + backgroundColor * 16 + 1;
+			const int skip_index = 53; // Hopefully some unimportant color combination.
+			if (index == skip_index) {
+				return 0;
+			} else if (index > skip_index) {
+				return index - 1;
+			}
+			return index;
+		}
+
+		inline int colorPairToIndex(Color textColor, Color backgroundColor) {
+			int textIndex = colorToInt(textColor);
+			int backgroundIndex = colorToInt(backgroundColor);
+
+			return colorPairToIndex(textIndex, backgroundIndex);
+		}
+
 		void setColorPair(Color textColor, Color backgroundColor) {
-			int index = colorToInt(textColor) + colorToInt(backgroundColor) * 16 + 1;
+			int index = colorPairToIndex(textColor, backgroundColor);
 			attron(COLOR_PAIR(index));
 		}
 
 		void initColorPairs() {
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) { 
-					init_pair (i + j * 16 + 1, i, j);
+			for (int i = 0; i < 16; ++i) {
+				for (int j = 0; j < 16; ++j) {
+					int index = colorPairToIndex(i, j);
+					if (index != 0) {
+						int error = init_pair (index, i, j);
+						if (error == ERR) {
+							std::cerr << "Error, init_pair( " << index << ", " << i << ", " << j << ") " << std::endl;
+						}
+					}
 				}
 			}
 		}
@@ -456,7 +483,7 @@ namespace console {
 	}
 
 	bool Console::isCursorVisibility() const{
-		return true;
+		return false;
 	}
 
 	void Console::clear() {
@@ -495,6 +522,9 @@ namespace console {
 		initColorPairs();
 		setCursorVisibility(false);
 		clear();
+
+		setTextColor(textColor_);
+		setBackgroundColor(backgroundColor_);
 	}
 
 	void Console::close() {

@@ -65,7 +65,10 @@ protected:
 
 	void initPreLoop() override {
 		setTitle("Test");
+		
 		setCursorPosition(10, 10);
+		setTextColor(console::Color::WHITE);
+		setBackgroundColor(console::Color::BLACK);
 		print("testing1");
 		print("testing1") << "testing2: " << 2 << "\n";
 		print("             testing3") << 3.1;
@@ -76,13 +79,23 @@ protected:
 			console::Console::setCursorPosition(1, i);
 			printColor((console::Color) i);
 		}
-
 		console::Console::setTextColor(console::Color::BLACK);
 		for (int i = 0; i < 16; ++i) {
 			console::Console::setBackgroundColor((console::Color) i);
 			console::Console::setCursorPosition(1, 16 + i);
 			printColor((console::Color) i);
 		}
+
+		console::Console::setTextColor(console::Color::BLACK);
+		for (int i = 0; i < 16; ++i) {
+			for (int j = 0; j < 16; ++j) {
+				console::Console::setTextColor((console::Color) i);
+				console::Console::setBackgroundColor((console::Color) j);
+				console::Console::setCursorPosition(20 + 5* i, 16 + j);
+				print("Test");
+			}
+		}
+		
 		int x, y;
 		getCursorPosition(x,y);
 	}

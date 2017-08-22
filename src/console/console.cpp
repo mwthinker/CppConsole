@@ -10,7 +10,7 @@ namespace console {
 
 	void sleep(double time) {
 		std::this_thread::sleep_for(std::chrono::duration<double>(time));
-	}	
+	}
 
 	Console::~Console() {
 		close();
@@ -43,8 +43,6 @@ namespace console {
 } // Namespace console.
 
 #ifdef _WIN32
-
-//#define STRICT
 
 namespace console {
 
@@ -115,7 +113,7 @@ namespace console {
 
 	void Console::startLoop() {
 		initPreLoop();
-		
+
 		auto time = std::chrono::high_resolution_clock::now();
 		while (!quit_) {
 			DWORD eventsRead = 0;
@@ -341,48 +339,26 @@ namespace console {
 			switch (color) {
 				case Color::BLACK:
 					return COLOR_BLACK;
-				case Color::DARKGREY:
-					return COLOR_BLACK + 8;
-				case Color::GREY:
-					return COLOR_WHITE;
 				case Color::WHITE:
-					return COLOR_WHITE + 8;
+					return COLOR_WHITE;
 				case Color::BLUE:
-					return COLOR_BLUE + 8;
-				case Color::DARKBLUE:
 					return COLOR_BLUE;
 				case Color::GREEN:
-					return COLOR_GREEN + 8;
-				case Color::DARKGREEN:
 					return COLOR_GREEN;
 				case Color::CYAN:
-					return COLOR_CYAN + 8;
-				case Color::DARKCYAN:
 					return COLOR_CYAN;
 				case Color::RED:
-					return COLOR_RED + 8;
-				case Color::DARKRED:
 					return COLOR_RED;
 				case Color::MAGENTA:
-					return COLOR_MAGENTA + 8;
-				case Color::DARKMAGENTA:
 					return COLOR_MAGENTA;
 				case Color::YELLOW:
-					return COLOR_YELLOW + 8;
-				case Color::DARKYELLOW:
 					return COLOR_YELLOW;
 			}
 			return COLOR_WHITE;
 		}
 
 		inline int colorPairToIndex(int textColor, int backgroundColor) {
-			int index = textColor + backgroundColor * 16 + 1;
-			const int skip_index = 53; // Hopefully some unimportant color combination.
-			if (index == skip_index) {
-				return 0;
-			} else if (index > skip_index) {
-				return index - 1;
-			}
+			int index = textColor + backgroundColor * 8 + 1;
 			return index;
 		}
 
@@ -399,11 +375,11 @@ namespace console {
 		}
 
 		void initColorPairs() {
-			for (int i = 0; i < 16; ++i) {
-				for (int j = 0; j < 16; ++j) {
+			for (int i = 0; i < 8; ++i) {
+				for (int j = 0; j < 8; ++j) {
 					int index = colorPairToIndex(i, j);
 					if (index != 0) {
-						int error = init_pair (index, i, j);
+						int error = init_pair(index, i, j);
 						if (error == ERR) {
 							std::cerr << "Error, init_pair( " << index << ", " << i << ", " << j << ") " << std::endl;
 						}
@@ -411,7 +387,7 @@ namespace console {
 				}
 			}
 		}
-		
+
 	} // Namespace anonymous.
 
 	Console::Console() : quit_(false), textColor_(Color::WHITE), backgroundColor_(Color::BLACK) {
@@ -420,12 +396,12 @@ namespace console {
 
 	void Console::startLoop() {
 		initPreLoop();
-		
+
 		auto time = std::chrono::high_resolution_clock::now();
 		while (!quit_) {
 			int ch = ERR;
-			
-			while ((ch = getch()) != ERR ) {
+
+			while ((ch = getch()) != ERR) {
 				if (KEY_RESIZE == ch) {
 					ConsoleEvent consoleEvent;
 					consoleEvent.consoleResize.type = ConsoleEventType::CONSOLERESIZE;
@@ -438,7 +414,7 @@ namespace console {
 				auto it = std::find_if(keyIsPressed_.begin(), keyIsPressed_.end(), [key](const KeyInfo& keyInfo) {
 					return keyInfo.key_ == key;
 				});
-				
+
 				if (it != keyIsPressed_.end()) {
 					it->time_ = time;
 				} else {
@@ -452,7 +428,7 @@ namespace console {
 					eventUpdate(consoleEvent);
 				}
 			}
-			
+
 			auto it = keyIsPressed_.begin();
 			while (it != keyIsPressed_.end()) {
 				if (time - it->time_ > std::chrono::milliseconds(250)) {
@@ -482,7 +458,7 @@ namespace console {
 		curs_set(visible ? 1 : 0);
 	}
 
-	bool Console::isCursorVisibility() const{
+	bool Console::isCursorVisibility() const {
 		return false;
 	}
 

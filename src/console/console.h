@@ -12,7 +12,7 @@
 #endif
 
 namespace console {
-	
+
 	enum class ConsoleEventType {
 		KEYDOWN,
 		KEYUP,
@@ -21,14 +21,6 @@ namespace console {
 
 	enum class Color {
 		BLACK,
-		DARKBLUE,
-		DARKGREEN,
-		DARKCYAN,
-		DARKRED,
-		DARKMAGENTA,
-		DARKYELLOW,
-		GREY,
-		DARKGREY,
 		BLUE,
 		GREEN,
 		CYAN,
@@ -37,7 +29,7 @@ namespace console {
 		YELLOW,
 		WHITE
 	};
-	
+
 	enum class Key {
 		UNKNOWN,
 		RETURN,
@@ -148,7 +140,7 @@ namespace console {
 		const Console& operator<<(int nbr) const;
 
 		const Console& operator<<(double nbr) const;
-		
+
 		// Start the loop which handle all inputs and graphics in the windows. It will not
 		// return until the loop is ended. Is closed when the windows is closed, i.e. a
 		// call to the function quit().
@@ -192,5 +184,5 @@ namespace console {
 	};
 
 } // console.
-	
+
 #endif // CONSOLE_H

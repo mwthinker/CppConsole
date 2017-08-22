@@ -30,30 +30,6 @@ protected:
 			case console::Color::BLACK:
 				print("BLACK");
 				break;
-			case console::Color::DARKBLUE:
-				print("DARKBLUE");
-				break;
-			case console::Color::DARKGREEN:
-				print("DARKGREEN");
-				break;
-			case console::Color::DARKCYAN:
-				print("DARKCYAN");
-				break;
-			case console::Color::DARKRED:
-				print("DARKRED");
-				break;
-			case console::Color::DARKMAGENTA:
-				print("DARKMAGENTA");
-				break;
-			case console::Color::DARKYELLOW:
-				print("DARKYELLOW");
-				break;
-			case console::Color::DARKGREY:
-				print("DARKGREY");
-				break;
-			case console::Color::GREY:
-				print("GREY");
-				break;
 			case console::Color::BLUE:
 				print("BLUE");
 				break;
@@ -89,21 +65,21 @@ protected:
 		print("             testing3") << 3.1;
 
 		console::Console::setBackgroundColor(console::Color::BLACK);
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < 8; ++i) {
 			console::Console::setTextColor((console::Color) i);
 			console::Console::setCursorPosition(1, i);
 			printColor((console::Color) i);
 		}
 		console::Console::setTextColor(console::Color::BLACK);
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < 8; ++i) {
 			console::Console::setBackgroundColor((console::Color) i);
 			console::Console::setCursorPosition(1, 16 + i);
 			printColor((console::Color) i);
 		}
 
 		console::Console::setTextColor(console::Color::BLACK);
-		for (int i = 0; i < 16; ++i) {
-			for (int j = 0; j < 16; ++j) {
+		for (int i = 0; i < 8; ++i) {
+			for (int j = 0; j < 8; ++j) {
 				console::Console::setTextColor((console::Color) i);
 				console::Console::setBackgroundColor((console::Color) j);
 				console::Console::setCursorPosition(20 + 5* i, 16 + j);

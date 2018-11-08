@@ -431,7 +431,7 @@ namespace console {
 
 			auto it = keyIsPressed_.begin();
 			while (it != keyIsPressed_.end()) {
-				if (time - it->time_ > std::chrono::milliseconds(250)) {
+				if (time - it->time_ > std::chrono::milliseconds(50)) {
 					ConsoleEvent consoleEvent;
 					consoleEvent.keyEvent.key = it->key_;
 					consoleEvent.keyEvent.type = ConsoleEventType::KEYUP;

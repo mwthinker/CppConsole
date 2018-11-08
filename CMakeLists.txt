@@ -1,43 +1,53 @@
-cmake_minimum_required(VERSION 2.8)
-project(CppConsole)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/)
-if (NOT MSVC)
-	set(CMAKE_CXX_FLAGS "-std=c++1y")
-	option(Debug "Set projects to debug mode.")
-	if (Debug)
-		set(CMAKE_BUILD_TYPE "Debug" CACHE INTERNAL "Build type.")
-		add_definitions(-D_DEBUG)
-	else ()
-		set(CMAKE_BUILD_TYPE "Release" CACHE INTERNAL "Build type.")
-	endif ()
-endif ()
+cmake_minimum_required(VERSION 3.1...3.12)
+project(CppConsole
+	DESCRIPTION
+		"A C++ library for input and output to the console"
+	LANGUAGES
+		CXX
+)
+set(CMAKE_MODULE_PATH
+	${CMAKE_MODULE_PATH}
+	${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/
+)
 
-# Source files.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(SOURCES
 	src/console/console.cpp
 	src/console/console.h
 )
 
-set(SOURCES_TEST
-	srcTest/main.cpp
-)
-
-option(ConsoleTest "ConsoleTest project is added" OFF)
+add_library(CppConsole ${SOURCES})
 
 if (NOT MSVC)
 	find_package(Curses REQUIRED)
-	include_directories(${CURSES_INCLUDE_DIR})
 endif ()
 
-add_library(Console ${SOURCES})
+target_include_directories(CppConsole
+	PUBLIC
+		"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
+	PRIVATE
+		${CURSES_INCLUDE_DIR}
+)
+	
+target_link_libraries(CppConsole
+	PUBLIC
+		${CURSES_LIBRARIES}
+)
 
-if (ConsoleTest)
-	include_directories(src)
-	add_executable(ConsoleTest ${SOURCES_TEST})
+option(CppConsoleTest "ConsoleTest project is added" OFF)
 
-	if (MSVC)
-		target_link_libraries(ConsoleTest Console)
-	else ()
-		target_link_libraries(ConsoleTest Console ${CURSES_LIBRARIES})
-	endif ()
+if (CppConsoleTest)
+	set(SOURCES_TEST
+		srcTest/main.cpp
+	)	
+	add_executable(CppConsoleTest ${SOURCES_TEST})
+	
+	target_include_directories(CppConsoleTest
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/srcTest
+	)
+	
+	target_link_libraries(CppConsoleTest CppConsole)
 endif ()

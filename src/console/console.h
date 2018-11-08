@@ -113,7 +113,7 @@ namespace console {
 
 		void clear();
 
-		inline void quit() {
+		void quit() {
 			quit_ = true;
 		}
 
@@ -158,11 +158,11 @@ namespace console {
 		void close();
 
 		// Is called by the loop.
-		inline virtual void update(double deltaTime) {
+		virtual void update(double deltaTime) {
 		}
 
 		// Is called by the loop. Is called when ever a event occurs.
-		inline virtual void eventUpdate(ConsoleEvent& consoleEvent) {
+		virtual void eventUpdate(ConsoleEvent& consoleEvent) {
 		}
 
 		bool quit_;

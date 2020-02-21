@@ -4,27 +4,18 @@
 
 #include <console/console.h>
 
-class Input {
-public:
-	Input() : left_(false), right_(false), up_(false), down_(false) {
-	}
-
-	bool left_;
-	bool right_;
-	bool up_;
-	bool down_;
+struct Input {
+	bool left;
+	bool right;
+	bool up;
+	bool down;
 };
 
 class TestConsole : public console::Console {
 public:
-	TestConsole() {
-		x_ = 5;
-		y_ = 5;
-		xPos_ = 5;
-		yPos_ = 5;
-	}
+	TestConsole() = default;
 
-protected:
+private:
 	void printColor(console::Color color) {
 		switch (color) {
 			case console::Color::BLACK:
@@ -87,32 +78,33 @@ protected:
 			}
 		}
 		
-		int x, y;
-		getCursorPosition(x,y);
+		auto [x, y] = getCursorPosition();
 	}
 
 	void closePostLoop() override {
 	}
 
 private:
-	double x_, y_;
-	int xPos_, yPos_;
+	double x_{5};
+	double y_{5};
+	int xPos_{5};
+	int yPos_{5};
 
-	Input input_;
+	Input input_{};
 
 	void update(double deltaTime) override {
 		double step = 10 * deltaTime;
 
-		if (y_ - 1 > 1 && input_.up_) {
+		if (y_ - 1 > 1 && input_.up) {
 			y_ -= step;
 		}
-		if (y_ + 1 < 100 && input_.down_) {
+		if (y_ + 1 < 100 && input_.down) {
 			y_ += step;
 		}
-		if (x_ - 1 > 1 && input_.left_) {
+		if (x_ - 1 > 1 && input_.left) {
 			x_ -= step;
 		}
-		if (x_ + 1 < 100 && input_.right_) {
+		if (x_ + 1 < 100 && input_.right) {
 			x_ += step;
 		}
 
@@ -142,16 +134,16 @@ private:
 						quit();
 						break;
 					case console::Key::UP:
-						input_.up_ = true;
+						input_.up = true;
 						break;
 					case console::Key::DOWN:
-						input_.down_ = true;
+						input_.down = true;
 						break;
 					case console::Key::LEFT:
-						input_.left_ = true;
+						input_.left = true;
 						break;
 					case console::Key::RIGHT:
-						input_.right_ = true;
+						input_.right = true;
 						break;
 					case console::Key::KEY_0:
 						setTextColor(console::Color::WHITE);
@@ -222,16 +214,16 @@ private:
 						print("RETURN");
 						break;
 					case console::Key::UP:
-						input_.up_ = false;
+						input_.up = false;
 						break;
 					case console::Key::DOWN:
-						input_.down_ = false;
+						input_.down = false;
 						break;
 					case console::Key::LEFT:
-						input_.left_ = false;
+						input_.left = false;
 						break;
 					case console::Key::RIGHT:
-						input_.right_ = false;
+						input_.right = false;
 						break;
 				}
 				break;

@@ -46,7 +46,7 @@ namespace console {
 
 namespace console {
 
-	Console::Console() : quit_(false), keyIsPressed_({false}), textColor_(Color::WHITE), backgroundColor_(Color::BLACK) {
+	Console::Console() {
 		init();
 	}
 
@@ -225,11 +225,10 @@ namespace console {
 		SetConsoleCursorPosition(outputHandle_, {(SHORT) x, (SHORT) y});
 	}
 
-	void Console::getCursorPosition(int& x, int& y) const {
+	std::pair<int, int> Console::getCursorPosition() const {
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(outputHandle_, &csbi);
-		x = csbi.dwCursorPosition.X;
-		y = csbi.dwCursorPosition.Y;
+		return {csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y};
 	}
 
 	void Console::setTextColor(Color color) {
@@ -390,7 +389,7 @@ namespace console {
 
 	} // Namespace anonymous.
 
-	Console::Console() : quit_(false), textColor_(Color::WHITE), backgroundColor_(Color::BLACK) {
+	Console::Console() {
 		init();
 	}
 
@@ -470,8 +469,10 @@ namespace console {
 		wmove(stdscr, y, x);
 	}
 
-	void Console::getCursorPosition(int& x, int& y) const {
-		getyx(stdscr, y, x);
+	std::pair<int, int> Console::getCursorPosition() const {
+		std::pair<int, int> pair;
+		getyx(stdscr, pair.first, pair.second);
+		return pair;
 	}
 
 	void Console::setTextColor(Color color) {

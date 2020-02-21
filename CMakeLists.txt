@@ -1,24 +1,28 @@
-cmake_minimum_required(VERSION 3.1...3.12)
+cmake_minimum_required(VERSION 3.14)
+# 3.14 support for Visual Studio 2019
+
+set(VCPKG_ROOT $ENV{VCPKG_ROOT})
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+	set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+		CACHE STRING ""
+	)
+	message(STATUS "Uses VCPKG CMAKE_TOOLCHAIN_FILE")
+endif()
+
 project(CppConsole
 	DESCRIPTION
 		"A C++ library for input and output to the console"
 	LANGUAGES
 		CXX
 )
-set(CMAKE_MODULE_PATH
-	${CMAKE_MODULE_PATH}
-	${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/
-)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCES
+add_library(CppConsole
 	src/console/console.cpp
 	src/console/console.h
 )
-
-add_library(CppConsole ${SOURCES})
 
 if (NOT MSVC)
 	find_package(Curses REQUIRED)
@@ -36,18 +40,8 @@ target_link_libraries(CppConsole
 		${CURSES_LIBRARIES}
 )
 
-option(CppConsoleTest "ConsoleTest project is added" OFF)
-
-if (CppConsoleTest)
-	set(SOURCES_TEST
-		srcTest/main.cpp
-	)	
-	add_executable(CppConsoleTest ${SOURCES_TEST})
-	
-	target_include_directories(CppConsoleTest
-		PRIVATE
-			${CMAKE_CURRENT_SOURCE_DIR}/srcTest
-	)
-	
-	target_link_libraries(CppConsoleTest CppConsole)
-endif ()
+message(STATUS "CppConsole_Example is available to add: -DCppConsole_Example=1")
+option(CppConsole_Example "Add CppConsole_Example project." OFF)
+if (CppConsole_Example)
+	add_subdirectory(CppConsole_Example)
+endif (CppConsole_Example)

@@ -123,7 +123,7 @@ namespace console {
 
 		void setCursorPosition(int x, int y);
 
-		void getCursorPosition(int& x, int& y) const;
+		std::pair<int, int> getCursorPosition() const;
 
 		void setTextColor(Color color);
 
@@ -165,15 +165,15 @@ namespace console {
 		virtual void eventUpdate(ConsoleEvent& consoleEvent) {
 		}
 
-		bool quit_;
-		Color textColor_;
-		Color backgroundColor_;
+		bool quit_{false};
+		Color textColor_{Color::WHITE};
+		Color backgroundColor_{Color::BLACK};
 #ifdef _WIN32
-		std::array<bool, static_cast<size_t>(Key::SIZE_ENUM)> keyIsPressed_;
-		CONSOLE_SCREEN_BUFFER_INFO initScreenBufferInfo_;
-		CONSOLE_CURSOR_INFO initCursorInfo_;
-		HANDLE inputHandle_;
-		HANDLE outputHandle_;
+		std::array<bool, static_cast<size_t>(Key::SIZE_ENUM)> keyIsPressed_{};
+		CONSOLE_SCREEN_BUFFER_INFO initScreenBufferInfo_{};
+		CONSOLE_CURSOR_INFO initCursorInfo_{};
+		HANDLE inputHandle_{};
+		HANDLE outputHandle_{};
 #else
 		struct KeyInfo {
 			std::chrono::time_point<std::chrono::high_resolution_clock> time_;
